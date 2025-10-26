@@ -4,6 +4,8 @@ A full-stack web application for tracking scores in the Golf card game. This pro
 
 ## Features
 
+- **Google Authentication**: Secure login with Google OAuth 2.0
+- **User Accounts**: Each user has their own private games and statistics
 - **Score Tracking**: Track scores for up to 9 rounds (holes) for multiple players
 - **Game History**: View all past games with detailed scores
 - **Player Statistics**: See win rates, average scores, and performance metrics
@@ -20,18 +22,22 @@ A full-stack web application for tracking scores in the Golf card game. This pro
 ### Backend
 - Node.js & Express for REST API
 - SQLite (via better-sqlite3) for database
+- Passport.js with Google OAuth 2.0 for authentication
+- Express Sessions for session management
 - CORS for cross-origin requests
 
 ## React Concepts Demonstrated
 
 1. **useState Hook** - Managing component state
 2. **useEffect Hook** - Fetching data and side effects
-3. **Event Handlers** - Responding to user interactions
-4. **Conditional Rendering** - Showing/hiding UI elements
-5. **Array Mapping** - Rendering lists of data
-6. **Component Composition** - Breaking UI into reusable components
-7. **Async/Await** - Making API calls with fetch
-8. **Props** - Passing data between components (implied in architecture)
+3. **React Context** - Global authentication state management
+4. **Custom Hooks** - useAuth for authentication logic
+5. **Event Handlers** - Responding to user interactions
+6. **Conditional Rendering** - Showing/hiding UI elements
+7. **Array Mapping** - Rendering lists of data
+8. **Component Composition** - Breaking UI into reusable components
+9. **Async/Await** - Making API calls with fetch
+10. **Protected Routes** - Authentication-based UI rendering
 
 ## Project Structure
 
@@ -57,6 +63,7 @@ golf-score-tracker/
 ### Prerequisites
 - Node.js 18+ installed
 - npm or yarn
+- A Google account for OAuth setup
 
 ### Installation
 
@@ -71,6 +78,18 @@ cd backend
 npm install
 cd ..
 ```
+
+3. **Set up Google OAuth credentials:**
+
+   **Important:** You must set up Google OAuth to run this app.
+
+   Follow the detailed instructions in [GOOGLE_OAUTH_SETUP.md](./GOOGLE_OAUTH_SETUP.md)
+
+   Quick summary:
+   - Create a Google Cloud project
+   - Enable Google+ API
+   - Create OAuth 2.0 credentials
+   - Update `backend/.env` with your credentials
 
 ### Running the Application
 

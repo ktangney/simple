@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import './App.css'
+import { useAuth } from './contexts/AuthContext'
+import Login from './components/Login'
 import GameHistory from './components/GameHistory'
 import PlayerStats from './components/PlayerStats'
 
 function App() {
+  const { user, loading, logout } = useAuth();
   // State to store players and their scores
   const [players, setPlayers] = useState([])
   const [newPlayerName, setNewPlayerName] = useState('')
@@ -76,6 +79,7 @@ function App() {
 
       const response = await fetch('http://localhost:3001/api/games', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -110,8 +114,33 @@ function App() {
 
   const winner = getWinner()
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="app">
+        <div className="loading">Loading...</div>
+      </div>
+    )
+  }
+
+  // Show login page if not authenticated
+  if (!user) {
+    return <Login />
+  }
+
   return (
     <div className="app">
+      {/* User Header */}
+      <div className="user-header">
+        <div className="user-info">
+          {user.picture && <img src={user.picture} alt={user.name} className="user-avatar" />}
+          <span className="user-name">{user.name}</span>
+        </div>
+        <button onClick={logout} className="logout-btn">
+          Logout
+        </button>
+      </div>
+
       <h1>Golf Card Game - Score Tracker</h1>
       <p className="subtitle">In Golf, the lowest score wins!</p>
 

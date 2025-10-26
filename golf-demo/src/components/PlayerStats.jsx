@@ -13,7 +13,9 @@ function PlayerStats() {
   const fetchStats = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:3001/api/players/stats')
+      const response = await fetch('http://localhost:3001/api/players/stats', {
+        credentials: 'include'
+      })
       if (!response.ok) throw new Error('Failed to fetch player stats')
       const data = await response.json()
       setStats(data)
