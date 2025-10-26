@@ -13,7 +13,9 @@ function GameHistory() {
   const fetchGames = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:3001/api/games')
+      const response = await fetch('http://localhost:3001/api/games', {
+        credentials: 'include'
+      })
       if (!response.ok) throw new Error('Failed to fetch games')
       const data = await response.json()
       setGames(data)
@@ -27,7 +29,9 @@ function GameHistory() {
 
   const fetchGameDetails = async (gameId) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/games/${gameId}`)
+      const response = await fetch(`http://localhost:3001/api/games/${gameId}`, {
+        credentials: 'include'
+      })
       if (!response.ok) throw new Error('Failed to fetch game details')
       const data = await response.json()
       setSelectedGame(data)
@@ -41,7 +45,8 @@ function GameHistory() {
 
     try {
       const response = await fetch(`http://localhost:3001/api/games/${gameId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       })
       if (!response.ok) throw new Error('Failed to delete game')
 

@@ -1,13 +1,84 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import session from 'express-session';
+import passport from 'passport';
 import db from './database.js';
+import { setupAuth, ensureAuthenticated } from './auth.js';
 
 const app = express();
 const PORT = 3001;
 
+// Setup authentication
+setupAuth();
+
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 app.use(express.json());
+
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// ====== Authentication Routes ======
+
+// Start Google OAuth flow
+app.get(
+  '/auth/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  })
+);
+
+// Google OAuth callback
+app.get(
+  '/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: process.env.FRONTEND_URL }),
+  (req, res) => {
+    // Successful authentication, redirect to frontend
+    res.redirect(process.env.FRONTEND_URL);
+  }
+);
+
+// Logout
+app.post('/auth/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Get current user
+app.get('/auth/user', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ user: req.user });
+  } else {
+    res.status(401).json({ user: null });
+  }
+});
+
+// ====== API Routes (Protected) ======
 
 // Get or create a player by name
 function getOrCreatePlayer(name) {
@@ -20,28 +91,31 @@ function getOrCreatePlayer(name) {
 }
 
 // POST /api/games - Save a completed game
-app.post('/api/games', (req, res) => {
+app.post('/api/games', ensureAuthenticated, (req, res) => {
   try {
     const { players, date } = req.body;
+    const userId = req.user.id;
 
     if (!players || players.length === 0) {
       return res.status(400).json({ error: 'No players provided' });
     }
 
     // Start transaction
-    const insertGame = db.prepare('INSERT INTO games (date, completed) VALUES (?, 1)');
+    const insertGame = db.prepare(
+      'INSERT INTO games (user_id, date, completed) VALUES (?, ?, 1)'
+    );
     const insertParticipant = db.prepare(`
       INSERT INTO game_participants
       (game_id, player_id, total_score, round_1, round_2, round_3, round_4, round_5, round_6, round_7, round_8, round_9, won)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const transaction = db.transaction((players, date) => {
-      const gameResult = insertGame.run(date || new Date().toISOString());
+    const transaction = db.transaction((userId, players, date) => {
+      const gameResult = insertGame.run(userId, date || new Date().toISOString());
       const gameId = gameResult.lastInsertRowid;
 
       // Find winner (lowest score)
-      const minScore = Math.min(...players.map(p => p.totalScore));
+      const minScore = Math.min(...players.map((p) => p.totalScore));
 
       // Insert all players
       for (const player of players) {
@@ -68,7 +142,7 @@ app.post('/api/games', (req, res) => {
       return gameId;
     });
 
-    const gameId = transaction(players, date);
+    const gameId = transaction(userId, players, date);
     res.json({ success: true, gameId });
   } catch (error) {
     console.error('Error saving game:', error);
@@ -76,10 +150,14 @@ app.post('/api/games', (req, res) => {
   }
 });
 
-// GET /api/games - Get all games with basic info
-app.get('/api/games', (req, res) => {
+// GET /api/games - Get all games for the current user
+app.get('/api/games', ensureAuthenticated, (req, res) => {
   try {
-    const games = db.prepare(`
+    const userId = req.user.id;
+
+    const games = db
+      .prepare(
+        `
       SELECT
         g.id,
         g.date,
@@ -92,10 +170,13 @@ app.get('/api/games', (req, res) => {
          LIMIT 1) as winner_name
       FROM games g
       LEFT JOIN game_participants gp ON g.id = gp.game_id
+      WHERE g.user_id = ?
       GROUP BY g.id
       ORDER BY g.created_at DESC
       LIMIT 50
-    `).all();
+    `
+      )
+      .all(userId);
 
     res.json(games);
   } catch (error) {
@@ -105,16 +186,21 @@ app.get('/api/games', (req, res) => {
 });
 
 // GET /api/games/:id - Get detailed game info
-app.get('/api/games/:id', (req, res) => {
+app.get('/api/games/:id', ensureAuthenticated, (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    const game = db.prepare('SELECT * FROM games WHERE id = ?').get(id);
+    const game = db
+      .prepare('SELECT * FROM games WHERE id = ? AND user_id = ?')
+      .get(id, userId);
     if (!game) {
       return res.status(404).json({ error: 'Game not found' });
     }
 
-    const participants = db.prepare(`
+    const participants = db
+      .prepare(
+        `
       SELECT
         gp.*,
         p.name as player_name
@@ -122,7 +208,9 @@ app.get('/api/games/:id', (req, res) => {
       JOIN players p ON gp.player_id = p.id
       WHERE gp.game_id = ?
       ORDER BY gp.total_score ASC
-    `).all(id);
+    `
+      )
+      .all(id);
 
     res.json({ ...game, participants });
   } catch (error) {
@@ -131,10 +219,14 @@ app.get('/api/games/:id', (req, res) => {
   }
 });
 
-// GET /api/players/stats - Get player statistics
-app.get('/api/players/stats', (req, res) => {
+// GET /api/players/stats - Get player statistics for current user's games
+app.get('/api/players/stats', ensureAuthenticated, (req, res) => {
   try {
-    const stats = db.prepare(`
+    const userId = req.user.id;
+
+    const stats = db
+      .prepare(
+        `
       SELECT
         p.id,
         p.name,
@@ -145,11 +237,15 @@ app.get('/api/players/stats', (req, res) => {
         MAX(gp.total_score) as worst_score,
         ROUND(CAST(SUM(gp.won) AS FLOAT) / COUNT(gp.id) * 100, 1) as win_rate
       FROM players p
-      LEFT JOIN game_participants gp ON p.id = gp.player_id
+      JOIN game_participants gp ON p.id = gp.player_id
+      JOIN games g ON gp.game_id = g.id
+      WHERE g.user_id = ?
       GROUP BY p.id
       HAVING games_played > 0
       ORDER BY games_won DESC, avg_score ASC
-    `).all();
+    `
+      )
+      .all(userId);
 
     res.json(stats);
   } catch (error) {
@@ -158,37 +254,15 @@ app.get('/api/players/stats', (req, res) => {
   }
 });
 
-// GET /api/players/:id/history - Get a specific player's game history
-app.get('/api/players/:id/history', (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const history = db.prepare(`
-      SELECT
-        g.id as game_id,
-        g.date,
-        gp.total_score,
-        gp.won,
-        gp.round_1, gp.round_2, gp.round_3, gp.round_4, gp.round_5,
-        gp.round_6, gp.round_7, gp.round_8, gp.round_9
-      FROM game_participants gp
-      JOIN games g ON gp.game_id = g.id
-      WHERE gp.player_id = ?
-      ORDER BY g.created_at DESC
-    `).all(id);
-
-    res.json(history);
-  } catch (error) {
-    console.error('Error fetching player history:', error);
-    res.status(500).json({ error: 'Failed to fetch player history' });
-  }
-});
-
 // DELETE /api/games/:id - Delete a game
-app.delete('/api/games/:id', (req, res) => {
+app.delete('/api/games/:id', ensureAuthenticated, (req, res) => {
   try {
     const { id } = req.params;
-    const result = db.prepare('DELETE FROM games WHERE id = ?').run(id);
+    const userId = req.user.id;
+
+    const result = db
+      .prepare('DELETE FROM games WHERE id = ? AND user_id = ?')
+      .run(id, userId);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: 'Game not found' });
