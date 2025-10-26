@@ -1,0 +1,557 @@
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+/* Add Player Section */
+.add-player {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.add-player input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  width: 250px;
+  transition: border-color 0.3s;
+}
+
+.add-player input:focus {
+  outline: none;
+  border-color: #2980b9;
+}
+
+.add-player button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-player button:hover {
+  background-color: #2980b9;
+}
+
+/* Score Table */
+.score-table-container {
+  overflow-x: auto;
+  margin: 2rem 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.score-table th {
+  background-color: #3498db;
+  color: white;
+  padding: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid #2980b9;
+}
+
+.score-table td {
+  padding: 0.75rem;
+  border: 1px solid #ecf0f1;
+  text-align: center;
+}
+
+.score-table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.score-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: left;
+  padding-left: 1rem;
+}
+
+.crown {
+  font-size: 1.2rem;
+}
+
+.score-input {
+  width: 50px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 2px solid #bdc3c7;
+  border-radius: 6px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.score-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+/* Remove button width for number inputs */
+.score-input::-webkit-inner-spin-button,
+.score-input::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+.total-score {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #e74c3c;
+  background-color: #fef5e7;
+}
+
+.winner-row {
+  background-color: #d5f4e6;
+}
+
+.winner-row:hover {
+  background-color: #c8eed8;
+}
+
+.remove-btn {
+  padding: 0.5rem 1rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 3rem;
+  color: #95a5a6;
+  font-size: 1.2rem;
+}
+
+/* Winner Announcement */
+.winner-announcement {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.winner-announcement h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.tab-button {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  color: #7f8c8d;
+  transition: all 0.3s;
+  margin-bottom: -2px;
+}
+
+.tab-button:hover {
+  color: #3498db;
+}
+
+.tab-button.active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+  font-weight: 600;
+}
+
+/* Game Actions */
+.game-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.save-game-btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save-game-btn:hover {
+  background-color: #229954;
+}
+
+.new-game-btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.new-game-btn:hover {
+  background-color: #7f8c8d;
+}
+
+/* Save Message */
+.save-message {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  animation: slideIn 0.3s ease-out;
+}
+
+.save-message.success {
+  background-color: #d5f4e6;
+  color: #27ae60;
+  border: 2px solid #27ae60;
+}
+
+.save-message.error {
+  background-color: #fadbd8;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Game History */
+.game-history {
+  margin-top: 2rem;
+}
+
+.history-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.games-list {
+  text-align: left;
+}
+
+.game-card {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: white;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.game-card:hover {
+  border-color: #3498db;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.game-card.active {
+  border-color: #3498db;
+  background-color: #ebf5fb;
+}
+
+.game-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.game-date {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.game-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.winner-info {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.delete-game-btn {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s;
+}
+
+.delete-game-btn:hover {
+  background-color: #c0392b;
+}
+
+.game-details {
+  text-align: left;
+}
+
+.game-details-date {
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+.won-badge {
+  background-color: #27ae60;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.lost-badge {
+  background-color: #95a5a6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+/* Player Stats */
+.player-stats {
+  margin-top: 2rem;
+}
+
+.sort-controls {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.sort-controls label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+  color: #2c3e50;
+}
+
+.sort-controls select {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #3498db;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border: 2px solid #ecf0f1;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card-header h3 {
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+}
+
+.rank-badge {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.stat-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.stat-label {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.stat-value.highlight {
+  color: #3498db;
+}
+
+.stat-value.success {
+  color: #27ae60;
+}
+
+.stat-value.danger {
+  color: #e74c3c;
+}
+
+/* Loading and Error States */
+.loading {
+  padding: 3rem;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+.error-message {
+  padding: 2rem;
+  text-align: center;
+  background-color: #fadbd8;
+  border: 2px solid #e74c3c;
+  border-radius: 8px;
+  color: #c0392b;
+  margin: 2rem 0;
+}
+
+.error-message button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.error-message button:hover {
+  background-color: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+
+  .tab-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .add-player {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-player input {
+    width: 100%;
+  }
+
+  .score-input {
+    width: 40px;
+    font-size: 0.9rem;
+    padding: 0.3rem;
+  }
+
+  .score-table th,
+  .score-table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .winner-announcement h2 {
+    font-size: 1.2rem;
+  }
+
+  .history-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-actions {
+    flex-direction: column;
+  }
+}

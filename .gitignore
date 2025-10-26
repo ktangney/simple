@@ -1,3 +1,4 @@
 simple/.gitignore
-    configuration.js    
-    node_modules/
+configuration.js
+node_modules/
+golf-demo/backend/golf-scores.db
